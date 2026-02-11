@@ -1,0 +1,37 @@
+{
+	"schemaVersion": 1,
+	"id": "persistent-chat",
+	"version": "${version}",
+	"name": "Persistent Chat",
+	"description": "Keep your chat logs persistent between game sessions.",
+	"authors": [
+		"liqw"
+	],
+	"contact": {
+		"sources": "https://github.com/liqwtf/persistent-chat"
+	},
+	"license": "MIT",
+	"icon": "assets/persistent-chat/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"me.liqw.persistentchat.PersistentChat"
+		],
+		"client": [
+			"me.liqw.persistentchat.PersistentChatClient"
+		]
+	},
+	"mixins": [
+		"persistent-chat.mixins.json",
+		{
+			"config": "persistent-chat.client.mixins.json",
+			"environment": "client"
+		}
+	],
+	"depends": {
+		"fabricloader": ">=0.18.4",
+		"minecraft": "~1.21.11",
+		"java": ">=21",
+		"fabric-api": "*"
+	}
+}
