@@ -3,7 +3,8 @@
 	"package": "me.liqw.persistentchat.mixin.client",
 	"compatibilityLevel": "JAVA_21",
 	"client": [
-		"ExampleClientMixin"
+      "ChatComponentAccessor",
+      "MinecraftClientMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

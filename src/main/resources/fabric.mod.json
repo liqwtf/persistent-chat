@@ -3,14 +3,15 @@
 	"id": "persistent-chat",
 	"version": "${version}",
 	"name": "Persistent Chat",
-	"description": "Keep your chat logs persistent between game sessions.",
+	"description": "This is an example description! Tell everyone what your mod is about!",
 	"authors": [
-		"liqw"
+		"Me!"
 	],
 	"contact": {
-		"sources": "https://github.com/liqwtf/persistent-chat"
+		"homepage": "https://fabricmc.net/",
+		"sources": "https://github.com/FabricMC/fabric-example-mod"
 	},
-	"license": "MIT",
+	"license": "CC0-1.0",
 	"icon": "assets/persistent-chat/icon.png",
 	"environment": "*",
 	"entrypoints": {
