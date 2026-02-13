@@ -10,6 +10,7 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.server.IntegratedServer;
 import net.minecraft.world.level.storage.LevelResource;
 import java.io.File;
 import java.io.IOException;
@@ -22,13 +23,14 @@ public class ChatSerializer {
 
     public static void save(List<GuiMessage> messages) {
         Minecraft client = Minecraft.getInstance();
-        if (client.getSingleplayerServer() == null)
+        IntegratedServer server = client.getSingleplayerServer();
+
+        if (server == null)
             return;
 
-        File directory = client.getSingleplayerServer().getWorldPath(LevelResource.ROOT).toFile();
+        File directory = server.getWorldPath(LevelResource.ROOT).toFile();
         File file = new File(directory, FILE_NAME);
 
-        // 2. Build the NBT structure
         CompoundTag root = new CompoundTag();
         ListTag historyList = new ListTag();
 
@@ -45,7 +47,6 @@ public class ChatSerializer {
 
         root.put("history", historyList);
 
-        // 3. Write to disk
         try {
             NbtIo.writeCompressed(root, file.toPath());
         } catch (IOException e) {
@@ -53,14 +54,16 @@ public class ChatSerializer {
         }
     }
 
-    public static List<GuiMessage> load() {
-        List<GuiMessage> messages = new ArrayList<>();
+    public static List<Component> load() {
         Minecraft client = Minecraft.getInstance();
+        IntegratedServer server = client.getSingleplayerServer();
 
-        if (client.getSingleplayerServer() == null)
+        List<Component> messages = new ArrayList<>();
+
+        if (server == null)
             return messages;
 
-        File directory = client.getSingleplayerServer().getWorldPath(LevelResource.ROOT).toFile();
+        File directory = server.getWorldPath(LevelResource.ROOT).toFile();
         File file = new File(directory, FILE_NAME);
 
         if (!file.exists())
@@ -68,7 +71,7 @@ public class ChatSerializer {
 
         try {
             CompoundTag root = NbtIo.readCompressed(file.toPath(), NbtAccounter.unlimitedHeap());
-            ListTag historyList = root.getListOrEmpty("history"); // 10 = CompoundTag ID
+            ListTag historyList = root.getListOrEmpty("history");
 
             for (int i = 0; i < historyList.size(); i++) {
                 CompoundTag entry = historyList.getCompoundOrEmpty(i);
@@ -76,13 +79,8 @@ public class ChatSerializer {
                 DataResult<Component> result = ComponentSerialization.CODEC.parse(NbtOps.INSTANCE,
                         entry.get("message"));
 
-                int timestamp = entry.getIntOr("created", 0);
-
-                if (result != null) {
-                    // We create a new GuiMessage with the saved data
-                    // Note: Signature is null because old messages don't need validation
-                    messages.add(new GuiMessage(timestamp, result.getOrThrow(), null, null));
-                }
+                if (result != null)
+                    messages.add(result.getOrThrow());
             }
         } catch (IOException e) {
             e.printStackTrace();
