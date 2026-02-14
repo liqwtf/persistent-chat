@@ -21,7 +21,7 @@ public class ChatHistoryState {
 
         for (GuiMessage message : messages) {
             ComponentSerialization.CODEC.encodeStart(NbtOps.INSTANCE, message.content())
-                    .resultOrPartial(err -> PersistentChat.LOGGER.error("Failed to encode message: {}", err))
+                    .resultOrPartial(error -> PersistentChat.LOGGER.error("Failed to encode message: {}", error))
                     .ifPresent(chatHistory::add);
         }
 
@@ -48,7 +48,7 @@ public class ChatHistoryState {
 
             for (Tag tag : chatHistory) {
                 ComponentSerialization.CODEC.parse(NbtOps.INSTANCE, tag)
-                        .resultOrPartial(err -> PersistentChat.LOGGER.error("Failed to parse message: {}", err))
+                        .resultOrPartial(error -> PersistentChat.LOGGER.error("Failed to parse message: {}", error))
                         .ifPresent(component -> messages.add(new GuiMessage(0, component, null, null)));
             }
         } catch (IOException error) {
