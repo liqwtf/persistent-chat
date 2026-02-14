@@ -3,7 +3,6 @@ package me.liqw.persistentchat;
 import net.minecraft.client.GuiMessage;
 import net.minecraft.client.server.IntegratedServer;
 import net.minecraft.nbt.*;
-import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.world.level.storage.LevelResource;
 
