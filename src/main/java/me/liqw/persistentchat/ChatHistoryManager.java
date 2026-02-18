@@ -1,9 +1,9 @@
 package me.liqw.persistentchat;
 
-import net.minecraft.client.GuiMessage;
-import net.minecraft.client.server.IntegratedServer;
 import net.minecraft.nbt.*;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.level.storage.LevelResource;
 
 import java.io.IOException;
@@ -12,14 +12,32 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ChatHistoryState {
+public class ChatHistoryManager {
     private static final String FILE_NAME = "chat_history.dat";
+    private static final List<Component> messages = new ArrayList<>();
+    private static final int MAX_MESSAGES = 100;
 
-    public static void save(IntegratedServer server, List<GuiMessage> messages) {
+    public static void addMessage(MinecraftServer server, Component message) {
+        if (message == null) return;
+
+        messages.add(message);
+
+        if (messages.size() > MAX_MESSAGES) {
+            messages.removeFirst();
+        }
+
+        save(server);
+    }
+
+    public static List<Component> getMessages() {
+        return messages;
+    }
+
+    public static void save(MinecraftServer server) {
         ListTag chatHistory = new ListTag();
 
-        for (GuiMessage message : messages) {
-            ComponentSerialization.CODEC.encodeStart(NbtOps.INSTANCE, message.content())
+        for (Component message : messages) {
+            ComponentSerialization.CODEC.encodeStart(NbtOps.INSTANCE, message)
                     .resultOrPartial(error -> PersistentChat.LOGGER.error("Failed to encode message: {}", error))
                     .ifPresent(chatHistory::add);
         }
@@ -29,17 +47,16 @@ public class ChatHistoryState {
 
         try {
             NbtIo.writeCompressed(root, getPath(server));
-            PersistentChat.LOGGER.info("Saved {} chat messages", chatHistory.size());
         } catch (IOException error) {
             PersistentChat.LOGGER.error("Failed to save chat history", error);
         }
     }
 
-    public static List<GuiMessage> load(IntegratedServer server) {
+    public static void load(MinecraftServer server) {
         Path path = getPath(server);
-        List<GuiMessage> messages = new ArrayList<>();
+        messages.clear();
 
-        if (!Files.exists(path)) return messages;
+        if (!Files.exists(path)) return;
 
         try {
             CompoundTag root = NbtIo.readCompressed(path, NbtAccounter.unlimitedHeap());
@@ -48,16 +65,16 @@ public class ChatHistoryState {
             for (Tag tag : chatHistory) {
                 ComponentSerialization.CODEC.parse(NbtOps.INSTANCE, tag)
                         .resultOrPartial(error -> PersistentChat.LOGGER.error("Failed to parse message: {}", error))
-                        .ifPresent(component -> messages.add(new GuiMessage(0, component, null, null)));
+                        .ifPresent(messages::add);
             }
         } catch (IOException error) {
             PersistentChat.LOGGER.error("Failed to load chat history", error);
         }
-
-        return messages;
     }
 
-    private static Path getPath(IntegratedServer server) {
-        return server.getWorldPath(LevelResource.ROOT).resolve("data").resolve(FILE_NAME);
+    private static Path getPath(MinecraftServer server) {
+        return server.getWorldPath(LevelResource.ROOT)
+                .resolve("data")
+                .resolve(FILE_NAME);
     }
 }
