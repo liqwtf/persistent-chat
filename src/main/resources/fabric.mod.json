@@ -1,35 +1,27 @@
 {
-	"schemaVersion": 1,
-	"id": "persistent-chat",
-	"version": "${version}",
-	"name": "Persistent Chat",
-	"description": "Keep your chat history between game sessions",
-	"authors": ["liqw"],
-	"contact": {
-		"sources": "https://github.com/liqwtf/persistent-chat"
-	},
-	"license": "MIT",
-	"icon": "assets/persistent-chat/icon.png",
-	"environment": "*",
-	"entrypoints": {
-		"main": [
-			"me.liqw.persistentchat.PersistentChat"
-		],
-		"client": [
-			"me.liqw.persistentchat.PersistentChatClient"
-		]
-	},
-	"mixins": [
-		"persistent-chat.mixins.json",
-		{
-			"config": "persistent-chat.client.mixins.json",
-			"environment": "client"
-		}
-	],
-	"depends": {
-		"fabricloader": ">=0.18.4",
-		"minecraft": "~1.21.11",
-		"java": ">=21",
-		"fabric-api": "*"
-	}
+  "schemaVersion": 1,
+  "name": "Persistent Chat",
+  "id": "persistent-chat",
+  "description": "${description}",
+  "version": "${version}",
+  "authors": [ "liqw" ],
+  "contact": {
+    "sources": "${sources}",
+    "issues": "${issues}"
+  },
+  "license": "MIT",
+  "icon": "assets/persistent-chat/icon.png",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "dev.liqw.persistentchat.PersistentChat"
+    ]
+  },
+  "mixins": [
+    "persistent-chat.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=${loader}",
+    "minecraft": "${minecraft}"
+  }
 }
