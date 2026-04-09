@@ -1,6 +1,9 @@
 package dev.liqw.persistentchat;
 
+import dev.liqw.persistentchat.config.PersistentChatConfig;
 import dev.liqw.persistentchat.utils.Storage;
+import me.shedaniel.autoconfig.AutoConfig;
+import me.shedaniel.autoconfig.serializer.GsonConfigSerializer;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 
@@ -13,8 +16,14 @@ public class PersistentChat implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
+        AutoConfig.register(PersistentChatConfig.class, GsonConfigSerializer::new);
+
         ClientPlayConnectionEvents.JOIN.register((_, _, client) -> {
             Storage.load(client.gui.getChat());
         });
+    }
+
+    public static PersistentChatConfig getConfig() {
+        return AutoConfig.getConfigHolder(PersistentChatConfig.class).getConfig();
     }
 }

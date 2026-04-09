@@ -15,6 +15,9 @@
   "entrypoints": {
     "client": [
       "dev.liqw.persistentchat.PersistentChat"
+    ],
+    "modmenu": [
+      "dev.liqw.persistentchat.config.ModMenuIntegration"
     ]
   },
   "mixins": [

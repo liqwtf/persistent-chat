@@ -24,7 +24,7 @@ public class Storage {
         Minecraft client = Minecraft.getInstance();
         String fileName = "fallback.dat";
 
-        if (client.level != null) {
+        if (client.level != null && !PersistentChat.getConfig().shareHistory) {
             if (client.getSingleplayerServer() != null) {
                 String worldName = client.getSingleplayerServer().getWorldPath(LevelResource.ROOT).getParent().getFileName().toString();
                 fileName = "singleplayer/" + parseFileName(worldName) + ".dat";
@@ -65,6 +65,8 @@ public class Storage {
     }
 
     public static void load(ChatComponent chat) {
+        if (!PersistentChat.getConfig().enabled) return;
+
         activePath = getPath();
         if (!Files.exists(activePath)) return;
 

@@ -31,8 +31,8 @@ repositories {
     strictMaven("https://www.cursemaven.com", "CurseForge", "curse.maven")
     strictMaven("https://api.modrinth.com/maven", "Modrinth", "maven.modrinth")
 
-//    maven("https://maven.terraformersmc.com/releases") { name = "Terraformers" } // Mod Menu
-//    maven("https://maven.shedaniel.me") { name = "shedaniel" } // Cloth Config
+    maven("https://maven.terraformersmc.com/releases") { name = "Terraformers" } // Mod Menu
+    maven("https://maven.shedaniel.me") { name = "shedaniel" } // Cloth Config
 }
 
 dependencies {
@@ -46,8 +46,8 @@ dependencies {
     modImplementation("net.fabricmc:fabric-loader:${property("loader_version")}")
     fapi("fabric-lifecycle-events-v1", "fabric-networking-api-v1", "fabric-resource-loader-v0", "fabric-content-registries-v0")
 
-//    modImplementation("me.shedaniel.cloth:cloth-config-fabric:${property("cloth_config_version")}")
-//    modImplementation("com.terraformersmc:modmenu:${property("mod_menu_version")}")
+    modImplementation("me.shedaniel.cloth:cloth-config-fabric:${property("cloth_config_version")}")
+    modImplementation("com.terraformersmc:modmenu:${property("mod_menu_version")}")
 }
 
 loom {
