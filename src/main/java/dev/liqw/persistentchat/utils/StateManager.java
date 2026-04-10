@@ -13,7 +13,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-public class Storage {
+public class StateManager {
     private static Path activePath = null; // temp fix, server is not found on exit
 
     private static String parseFileName(String name) {
@@ -41,23 +41,23 @@ public class Storage {
                 .resolve(fileName);
     }
 
-    public static void save(ChatComponent.State vanillaState) {
+    public static void save(ChatComponent.State state) {
         Minecraft client = Minecraft.getInstance();
         Path path = (activePath != null) ? activePath : getPath();
 
         if (client.level == null) return;
 
-        Codec serializableState = Codec.fromVanilla(vanillaState);
         RegistryOps<Tag> ops = RegistryOps.create(NbtOps.INSTANCE, client.level.registryAccess());
 
-        Codec.CODEC.encodeStart(ops, serializableState).ifSuccess(nbt -> {
+        ChatComponentState.CODEC.encodeStart(ops, state).ifSuccess(nbt -> {
             try {
                 Files.createDirectories(path.getParent());
                 if (nbt instanceof CompoundTag compound) {
                     NbtIo.writeCompressed(compound, path);
+                    PersistentChat.LOGGER.info("Saved {} chat state entries", compound.size());
                 }
             } catch (IOException error) {
-                PersistentChat.LOGGER.error("Failed to store to disk", error);
+                PersistentChat.LOGGER.error("Failed to save chat state", error);
             }
         });
 
@@ -77,9 +77,9 @@ public class Storage {
             CompoundTag root = NbtIo.readCompressed(activePath, NbtAccounter.unlimitedHeap());
             RegistryOps<Tag> ops = RegistryOps.create(NbtOps.INSTANCE, client.level.registryAccess());
 
-            Codec.CODEC.parse(ops, root).ifSuccess(state -> chat.restoreState(state.toVanilla()));
+            ChatComponentState.CODEC.parse(ops, root).ifSuccess(chat::restoreState);
         } catch (IOException error) {
-            PersistentChat.LOGGER.error("Failed to load from disk", error);
+            PersistentChat.LOGGER.error("Failed to load chat state", error);
         }
     }
 }
