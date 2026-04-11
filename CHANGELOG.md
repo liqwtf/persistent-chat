@@ -1,2 +1,2 @@
-- move code to stonecutter for versioning
-- added support for multiplayer servers
+- made server-side mod
+  - allows you to view messages that was sent while you were offline

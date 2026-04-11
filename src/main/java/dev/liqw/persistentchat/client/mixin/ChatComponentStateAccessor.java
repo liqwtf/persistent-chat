@@ -1,4 +1,4 @@
-package dev.liqw.persistentchat.mixin;
+package dev.liqw.persistentchat.client.mixin;
 
 import net.minecraft.client.gui.components.ChatComponent;
 import net.minecraft.client.multiplayer.chat.GuiMessage;

@@ -11,17 +11,24 @@
   },
   "license": "MIT",
   "icon": "assets/persistent-chat/icon.png",
-  "environment": "client",
+  "environment": "*",
   "entrypoints": {
-    "client": [
+    "main": [
       "dev.liqw.persistentchat.PersistentChat"
     ],
+    "client": [
+      "dev.liqw.persistentchat.client.PersistentChatClient"
+    ],
     "modmenu": [
-      "dev.liqw.persistentchat.config.ModMenuIntegration"
+      "dev.liqw.persistentchat.client.config.ModMenuIntegration"
     ]
   },
   "mixins": [
-    "persistent-chat.mixins.json"
+    "persistent-chat.mixins.json",
+    {
+      "config": "persistent-chat.client.mixins.json",
+      "environment": "client"
+    }
   ],
   "depends": {
     "fabricloader": ">=${loader}",

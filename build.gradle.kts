@@ -59,7 +59,7 @@ loom {
 
     runConfigs.all {
         vmArgs("-Dmixin.debug.export=true")
-        runDir = "../../run"
+        runDir = "../../run/${name}"
     }
 }
 
@@ -76,8 +76,6 @@ java {
 
 tasks {
     processResources {
-        exclude("**/neoforge.mods.toml")
-
         fun MutableMap<String, String>.register(key: String, property: String) {
             val value: String = sc.properties[property]
             inputs.property(key, value)
@@ -127,7 +125,8 @@ publishMods {
     modrinth {
         projectId = property("publish.modrinth") as String
         minecraftVersions.addAll(compatibleVersions)
-        requires("fabric-api")
+        requires("fabric-api", "cloth-config")
+        optional("modmenu")
 
         accessToken = token.modrinth
     }
@@ -137,7 +136,8 @@ publishMods {
         minecraftVersions.addAll(compatibleVersions)
         javaVersions.add(requiredJava)
         clientRequired = true
-        requires("fabric-api")
+        requires("fabric-api", "cloth-config")
+        optional("modmenu")
 
         accessToken = token.curseforge
     }

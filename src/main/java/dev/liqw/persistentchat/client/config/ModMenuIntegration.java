@@ -1,4 +1,4 @@
-package dev.liqw.persistentchat.config;
+package dev.liqw.persistentchat.client.config;
 
 import com.terraformersmc.modmenu.api.ConfigScreenFactory;
 import com.terraformersmc.modmenu.api.ModMenuApi;

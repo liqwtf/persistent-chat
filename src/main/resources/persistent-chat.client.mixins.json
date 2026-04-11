@@ -1,0 +1,13 @@
+{
+  "required": true,
+  "package": "dev.liqw.persistentchat.client.mixin",
+  "compatibilityLevel": "${java}",
+  "client": [
+    "ChatComponentMixin",
+    "ChatComponentStateAccessor",
+    "GuiMessageMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

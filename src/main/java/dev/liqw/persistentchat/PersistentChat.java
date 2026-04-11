@@ -1,29 +1,33 @@
 package dev.liqw.persistentchat;
 
 import dev.liqw.persistentchat.config.PersistentChatConfig;
-import dev.liqw.persistentchat.utils.StateManager;
-import me.shedaniel.autoconfig.AutoConfig;
-import me.shedaniel.autoconfig.serializer.GsonConfigSerializer;
-import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
+import dev.liqw.persistentchat.network.MessageBufferPayload;
+import dev.liqw.persistentchat.utils.MessageBuffer;
+import dev.liqw.persistentchat.utils.TimestampedMessage;
+import net.fabricmc.api.ModInitializer;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;import net.minecraft.network.chat.Component;import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;import java.util.List;
 
-public class PersistentChat implements ClientModInitializer {
+public class PersistentChat implements ModInitializer {
     public static final String MOD_ID = "persistent-chat";
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
     @Override
-    public void onInitializeClient() {
-        AutoConfig.register(PersistentChatConfig.class, GsonConfigSerializer::new);
+    public void onInitialize() {
+        PayloadTypeRegistry.clientboundPlay().register(MessageBufferPayload.TYPE, MessageBufferPayload.CODEC);
 
-        ClientPlayConnectionEvents.JOIN.register((_, _, client) -> {
-            StateManager.load(client.gui.getChat());
+        ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
+            server.execute(() -> {
+                List<TimestampedMessage> buffer = MessageBuffer.getBuffer();
+                if (!buffer.isEmpty()) {
+                    List<Component> messages = buffer.stream().map(TimestampedMessage::content).toList();
+                    List<Long> timestamps = buffer.stream().map(TimestampedMessage::timestamp).toList();
+                    sender.sendPacket(new MessageBufferPayload(messages, timestamps));
+                }
+            });
         });
-    }
 
-    public static PersistentChatConfig getConfig() {
-        return AutoConfig.getConfigHolder(PersistentChatConfig.class).getConfig();
+        PersistentChatConfig.load();
     }
 }

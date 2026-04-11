@@ -1,15 +1,51 @@
 package dev.liqw.persistentchat.config;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import dev.liqw.persistentchat.PersistentChat;
-import me.shedaniel.autoconfig.ConfigData;
-import me.shedaniel.autoconfig.annotation.Config;
-import me.shedaniel.autoconfig.annotation.ConfigEntry;
+import net.fabricmc.loader.api.FabricLoader;
 
-@Config(name = PersistentChat.MOD_ID)
-public class PersistentChatConfig implements ConfigData {
-    @ConfigEntry.Gui.Tooltip
-    public boolean enabled = true;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
-    @ConfigEntry.Gui.Tooltip
-    public boolean shareHistory = false;
+public class PersistentChatConfig {
+    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
+
+    private static Path getPath() {
+        return FabricLoader.getInstance().getConfigDir().resolve("persistent-chat.json");
+    }
+
+    private static PersistentChatConfig instance = new PersistentChatConfig();
+
+    public boolean saveSystemMessages = true;
+
+    public static PersistentChatConfig get() {
+        return instance;
+    }
+
+    public static void load() {
+        Path path = getPath();
+
+        if (!Files.exists(path)) {
+            save();
+            return;
+        }
+
+        try {
+            String json = Files.readString(path);
+            instance = GSON.fromJson(json, PersistentChatConfig.class);
+        } catch (IOException error) {
+            PersistentChat.LOGGER.error("Failed to load server config", error);
+            instance = new PersistentChatConfig();
+        }
+    }
+
+    private static void save() {
+        try {
+            Files.writeString(getPath(), GSON.toJson(instance));
+        } catch (IOException error) {
+            PersistentChat.LOGGER.error("Failed to save server config", error);
+        }
+    }
 }
