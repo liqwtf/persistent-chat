@@ -1,2 +1,3 @@
 - made server-side mod
   - allows you to view messages that was sent while you were offline
+- made server message buffer persist between restarts

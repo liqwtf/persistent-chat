@@ -6,6 +6,7 @@ import dev.liqw.persistentchat.utils.MessageBuffer;
 import dev.liqw.persistentchat.utils.TimestampedMessage;
 import net.fabricmc.api.ModInitializer;
 
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;import net.minecraft.network.chat.Component;import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;import java.util.List;
 
@@ -17,12 +18,16 @@ public class PersistentChat implements ModInitializer {
     public void onInitialize() {
         PayloadTypeRegistry.clientboundPlay().register(MessageBufferPayload.TYPE, MessageBufferPayload.CODEC);
 
-        ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
+        ServerLifecycleEvents.SERVER_STARTED.register(MessageBuffer::initialize);
+        ServerLifecycleEvents.SERVER_STOPPED.register((_) -> MessageBuffer.flush());
+
+        ServerPlayConnectionEvents.JOIN.register((_, sender, server) -> {
             server.execute(() -> {
                 List<TimestampedMessage> buffer = MessageBuffer.getBuffer();
                 if (!buffer.isEmpty()) {
                     List<Component> messages = buffer.stream().map(TimestampedMessage::content).toList();
                     List<Long> timestamps = buffer.stream().map(TimestampedMessage::timestamp).toList();
+
                     sender.sendPacket(new MessageBufferPayload(messages, timestamps));
                 }
             });
