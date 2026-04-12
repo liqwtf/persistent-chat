@@ -7,6 +7,6 @@ import me.shedaniel.autoconfig.AutoConfigClient;
 public class ModMenuIntegration implements ModMenuApi {
     @Override
     public ConfigScreenFactory<?> getModConfigScreenFactory() {
-        return parent -> AutoConfigClient.getConfigScreen(PersistentChatConfig.class, parent).get();
+        return parent -> AutoConfigClient.getConfigScreen(PersistentChatClientConfig.class, parent).get();
     }
 }

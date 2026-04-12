@@ -1,5 +1,6 @@
 package dev.liqw.persistentchat.mixin;
 
+import dev.liqw.persistentchat.PersistentChat;
 import dev.liqw.persistentchat.config.PersistentChatConfig;
 import dev.liqw.persistentchat.utils.MessageBuffer;
 import dev.liqw.persistentchat.utils.TimestampedMessage;
@@ -26,7 +27,7 @@ public abstract class PlayerListMixin {
 
     @Inject(method = "broadcastSystemMessage(Lnet/minecraft/network/chat/Component;Z)V", at = @At("HEAD"))
     public void catchSystemMessage(Component message, boolean overlay, CallbackInfo ci) {
-        if (!overlay && PersistentChatConfig.get().saveSystemMessages) {
+        if (!overlay && PersistentChat.getConfig().saveSystemMessages) {
             MessageBuffer.save(new TimestampedMessage(message, System.currentTimeMillis()));
         }
     }

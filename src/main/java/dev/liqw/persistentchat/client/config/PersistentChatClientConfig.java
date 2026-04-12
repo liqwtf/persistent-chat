@@ -6,7 +6,7 @@ import me.shedaniel.autoconfig.annotation.Config;
 import me.shedaniel.autoconfig.annotation.ConfigEntry;
 
 @Config(name = PersistentChat.MOD_ID)
-public class PersistentChatConfig implements ConfigData {
+public class PersistentChatClientConfig implements ConfigData {
     @ConfigEntry.Gui.Tooltip
     public boolean enabled = true;
 

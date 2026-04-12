@@ -1,6 +1,6 @@
 package dev.liqw.persistentchat.client;
 
-import dev.liqw.persistentchat.client.config.PersistentChatConfig;
+import dev.liqw.persistentchat.client.config.PersistentChatClientConfig;
 import dev.liqw.persistentchat.client.utils.MessageTimestampRegistry;
 import dev.liqw.persistentchat.client.utils.StateManager;
 import dev.liqw.persistentchat.network.MessageBufferPayload;
@@ -32,10 +32,10 @@ public class PersistentChatClient implements ClientModInitializer {
             StateManager.reset();
         });
 
-        AutoConfig.register(PersistentChatConfig.class, GsonConfigSerializer::new);
+        AutoConfig.register(PersistentChatClientConfig.class, GsonConfigSerializer::new);
     }
 
-    public static PersistentChatConfig getConfig() {
-        return AutoConfig.getConfigHolder(PersistentChatConfig.class).getConfig();
+    public static PersistentChatClientConfig getConfig() {
+        return AutoConfig.getConfigHolder(PersistentChatClientConfig.class).getConfig();
     }
 }

@@ -4,6 +4,8 @@ import dev.liqw.persistentchat.config.PersistentChatConfig;
 import dev.liqw.persistentchat.network.MessageBufferPayload;
 import dev.liqw.persistentchat.utils.MessageBuffer;
 import dev.liqw.persistentchat.utils.TimestampedMessage;
+import me.shedaniel.autoconfig.AutoConfig;
+import me.shedaniel.autoconfig.serializer.GsonConfigSerializer;
 import net.fabricmc.api.ModInitializer;
 
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
@@ -33,6 +35,10 @@ public class PersistentChat implements ModInitializer {
             });
         });
 
-        PersistentChatConfig.load();
+        AutoConfig.register(PersistentChatConfig.class, GsonConfigSerializer::new);
+    }
+
+    public static PersistentChatConfig getConfig() {
+        return AutoConfig.getConfigHolder(PersistentChatConfig.class).getConfig();
     }
 }
