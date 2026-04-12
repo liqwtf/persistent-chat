@@ -31,18 +31,23 @@ public class StateManager {
     private static Path activePath = null;
     private static boolean loadedUsingPayload = false;
 
-    private static final Set<String> recentlyRestored = Collections.newSetFromMap(new ConcurrentHashMap<>());
+    private static final Set<Long> recentlyRestored = Collections.newSetFromMap(new ConcurrentHashMap<>());
     private static long restoreTime = 0;
     private static final long RESTORE_WINDOW_MS = 3000;
+    private static final long TIMESTAMP_MARGIN_MS = 150;
 
-    public static boolean shouldIgnore(Component content) {
+    private static boolean timestampMatches(long saved, long payload) {
+        return Math.abs(saved - payload) <= TIMESTAMP_MARGIN_MS;
+    }
+
+    public static boolean shouldIgnore(long timestamp) {
         if (System.currentTimeMillis() - restoreTime > RESTORE_WINDOW_MS) return false;
-        return recentlyRestored.contains(content.getString());
+        return recentlyRestored.contains(timestamp);
     }
 
     private static void markRestored(List<GuiMessage> messages) {
         recentlyRestored.clear();
-        messages.forEach(msg -> recentlyRestored.add(msg.content().getString()));
+        messages.forEach(msg -> recentlyRestored.add(GuiMessageAccessor.of(msg).getTimestamp()));
         restoreTime = System.currentTimeMillis();
     }
 
@@ -159,16 +164,18 @@ public class StateManager {
             ChatComponentState.CODEC.parse(ops, root).ifSuccess(state -> {
                 List<GuiMessage> messages = ((ChatComponentStateAccessor) state).getMessages();
 
-                Set<String> existingContents = messages.stream()
-                        .map(message -> message.content().getString())
+                Set<Long> existingTimestamps = messages.stream()
+                        .map(msg -> GuiMessageAccessor.of(msg).getTimestamp())
                         .collect(Collectors.toSet());
 
                 for (int i = 0; i < payload.messages().size(); i++) {
-                    String content = payload.messages().get(i).getString();
-                    if (existingContents.contains(content)) continue;
+                    Long timestamp = payload.timestamps().get(i);
+                    boolean isDuplicate = existingTimestamps.stream()
+                            .anyMatch(savedTs -> timestampMatches(savedTs, timestamp));
+                    if (isDuplicate) continue;
 
                     GuiMessage message = new GuiMessage(-999, payload.messages().get(i), null, GuiMessageSource.PLAYER, null);
-                    GuiMessageAccessor.of(message).setTimestamp(payload.timestamps().get(i));
+                    GuiMessageAccessor.of(message).setTimestamp(timestamp);
                     GuiMessageAccessor.of(message).setFromPayload(true);
                     messages.add(message);
                 }

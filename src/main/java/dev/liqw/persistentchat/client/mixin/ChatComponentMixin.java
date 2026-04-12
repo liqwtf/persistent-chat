@@ -22,15 +22,14 @@ public abstract class ChatComponentMixin {
 
     @Inject(method = "addMessageToQueue", at = @At("HEAD"), cancellable = true)
     public void onAddMessageToQueue(GuiMessage message, CallbackInfo ci) {
-        if (StateManager.shouldIgnore(message.content())) {
-            ci.cancel();
-            return;
-        }
-
         if (GuiMessageAccessor.of(message).getTimestamp() == 0L) {
             GuiMessageAccessor.of(message).setTimestamp(
                     MessageTimestampRegistry.consume(message.content())
             );
+        }
+
+        if (StateManager.shouldIgnore(GuiMessageAccessor.of(message).getTimestamp())) {
+            ci.cancel();
         }
     }
 }
