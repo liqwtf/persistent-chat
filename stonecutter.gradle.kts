@@ -5,6 +5,11 @@ plugins {
 
 stonecutter active "26.1"
 
+stonecutter tasks {
+    order("publishModrinth")
+    order("publishCurseforge")
+}
+
 stonecutter parameters {
     replacements {
         string(current.parsed >= "1.21.11") {
