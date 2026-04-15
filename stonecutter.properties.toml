@@ -1,7 +1,7 @@
 # See https://stonecutter.kikugie.dev/wiki/config/properties#centralized-properties
 mod.id = "persistent-chat"
 mod.group = "dev.liqw"
-mod.version = "2.0.0"
+mod.version = "2.0.1"
 description = "Keep your chat history between game sessions"
 sources_url = "https://github.com/liqwtf/persistent-chat"
 issues_url = "https://github.com/liqwtf/persistent-chat/issues"
