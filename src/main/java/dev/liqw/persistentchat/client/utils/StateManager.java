@@ -12,7 +12,6 @@ import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.client.multiplayer.chat.GuiMessage;
 import net.minecraft.client.multiplayer.chat.GuiMessageSource;
 import net.minecraft.nbt.*;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.world.level.storage.LevelResource;
 
@@ -94,7 +93,7 @@ public class StateManager {
 
         RegistryOps<Tag> ops = RegistryOps.create(NbtOps.INSTANCE, client.level.registryAccess());
 
-        ChatComponentState.CODEC.encodeStart(ops, filteredState).ifSuccess(nbt -> {
+        ChatPersistence.CODEC.encodeStart(ops, filteredState).ifSuccess(nbt -> {
             try {
                 Files.createDirectories(path.getParent());
                 if (nbt instanceof CompoundTag compound) {
@@ -122,7 +121,7 @@ public class StateManager {
             CompoundTag root = NbtIo.readCompressed(activePath, NbtAccounter.unlimitedHeap());
             RegistryOps<Tag> ops = RegistryOps.create(NbtOps.INSTANCE, client.level.registryAccess());
 
-            ChatComponentState.CODEC.parse(ops, root).ifSuccess(state -> {
+            ChatPersistence.CODEC.parse(ops, root).ifSuccess(state -> {
                 List<GuiMessage> messages = ((ChatComponentStateAccessor) state).getMessages();
                 sortByTimestamp(messages);
                 markRestored(messages);
@@ -146,7 +145,7 @@ public class StateManager {
         if (!Files.exists(activePath)) {
             List<GuiMessage> messages = new ArrayList<>();
             for (int i = 0; i < payload.messages().size(); i++) {
-                GuiMessage message = new GuiMessage(-999, payload.messages().get(i), null, GuiMessageSource.PLAYER, ChatComponentState.GUI_MESSAGE_TAG_SERVER);
+                GuiMessage message = new GuiMessage(-999, payload.messages().get(i), null, GuiMessageSource.PLAYER, ChatPersistence.GUI_MESSAGE_TAG_SERVER);
                 GuiMessageAccessor.of(message).setTimestamp(payload.timestamps().get(i));
                 GuiMessageAccessor.of(message).setFromPayload(true);
                 messages.add(message);
@@ -161,7 +160,7 @@ public class StateManager {
             CompoundTag root = NbtIo.readCompressed(activePath, NbtAccounter.unlimitedHeap());
             RegistryOps<Tag> ops = RegistryOps.create(NbtOps.INSTANCE, client.level.registryAccess());
 
-            ChatComponentState.CODEC.parse(ops, root).ifSuccess(state -> {
+            ChatPersistence.CODEC.parse(ops, root).ifSuccess(state -> {
                 List<GuiMessage> messages = ((ChatComponentStateAccessor) state).getMessages();
 
                 Set<Long> existingTimestamps = messages.stream()
@@ -174,7 +173,7 @@ public class StateManager {
                             .anyMatch(savedTs -> timestampMatches(savedTs, timestamp));
                     if (isDuplicate) continue;
 
-                    GuiMessage message = new GuiMessage(-999, payload.messages().get(i), null, GuiMessageSource.PLAYER, ChatComponentState.GUI_MESSAGE_TAG_SERVER);
+                    GuiMessage message = new GuiMessage(-999, payload.messages().get(i), null, GuiMessageSource.PLAYER, ChatPersistence.GUI_MESSAGE_TAG_SERVER);
                     GuiMessageAccessor.of(message).setTimestamp(timestamp);
                     GuiMessageAccessor.of(message).setFromPayload(true);
                     messages.add(message);

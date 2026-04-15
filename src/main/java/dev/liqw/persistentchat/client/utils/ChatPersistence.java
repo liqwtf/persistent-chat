@@ -12,29 +12,21 @@ import net.minecraft.client.multiplayer.chat.GuiMessageTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.network.chat.MessageSignature;
-import org.spongepowered.asm.mixin.Unique;
 
 import java.util.ArrayList;
 import java.util.Optional;
 
-public class ChatComponentState {
-    public static final GuiMessageTag GUI_MESSAGE_TAG_SERVER =
-            new GuiMessageTag(13616525, null, Component.translatable("persistent-chat.chat.tag.payload"), "Retrieved from server");
-
-    public static final GuiMessageTag GUI_MESSAGE_TAG_LOCAL =
-            new GuiMessageTag(9418383, null, Component.translatable("persistent-chat.chat.tag.local"), "Restored message");
+public class ChatPersistence {
+    public static final GuiMessageTag GUI_MESSAGE_TAG_SERVER = new GuiMessageTag(13616525, null, Component.translatable("persistent-chat.chat.tag.payload"), "Retrieved from server");
+    public static final GuiMessageTag GUI_MESSAGE_TAG_LOCAL = new GuiMessageTag(9418383, null, Component.translatable("persistent-chat.chat.tag.local"), "Restored message");
 
     private static final Codec<GuiMessage> GUI_MESSAGE_CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            Codec.INT.fieldOf("addedTime").forGetter(_ -> -999),
             ComponentSerialization.CODEC.fieldOf("content").forGetter(GuiMessage::content),
-            MapCodec.unit(Optional.<MessageSignature>empty()).fieldOf("signature").forGetter(m -> Optional.ofNullable(m.signature())),
             Codec.INT.xmap(i -> GuiMessageSource.values()[i], Enum::ordinal).fieldOf("source").forGetter(GuiMessage::source),
             Codec.LONG.fieldOf("timestamp").forGetter(message -> GuiMessageAccessor.of(message).getTimestamp())
-    ).apply(instance, (addedTime, content, signature, source, timestamp) -> {
-        GuiMessage message = new GuiMessage(addedTime, content, signature.orElse(null), source, GUI_MESSAGE_TAG_LOCAL);
-
+    ).apply(instance, (content, source, timestamp) -> {
+        GuiMessage message = new GuiMessage(-999, content, null, source, GUI_MESSAGE_TAG_LOCAL);
         GuiMessageAccessor.of(message).setTimestamp(timestamp);
-
         return message;
     }));
 
@@ -42,5 +34,6 @@ public class ChatComponentState {
             GUI_MESSAGE_CODEC.listOf().fieldOf("messages").forGetter(state -> ((ChatComponentStateAccessor) state).getMessages()),
             Codec.STRING.listOf().fieldOf("history").forGetter(state -> ((ChatComponentStateAccessor) state).getHistory())
     ).apply(instance, (messages, history) ->
-            new ChatComponent.State(new ArrayList<>(messages), new ArrayList<>(history), new ArrayList<>())));
+            new ChatComponent.State(new ArrayList<>(messages), new ArrayList<>(history), new ArrayList<>())
+    ));
 }
