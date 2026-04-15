@@ -9,8 +9,14 @@ import me.shedaniel.autoconfig.serializer.GsonConfigSerializer;
 import net.fabricmc.api.ModInitializer;
 
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
-import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;import net.minecraft.network.chat.Component;import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;import java.util.List;
+import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
+import net.minecraft.network.chat.Component;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.List;
 
 public class PersistentChat implements ModInitializer {
     public static final String MOD_ID = "persistent-chat";
@@ -18,12 +24,13 @@ public class PersistentChat implements ModInitializer {
 
     @Override
     public void onInitialize() {
+        //~ if <26 'clientboundPlay()' -> 'playS2C()'
         PayloadTypeRegistry.clientboundPlay().register(MessageBufferPayload.TYPE, MessageBufferPayload.CODEC);
 
         ServerLifecycleEvents.SERVER_STARTED.register(MessageBuffer::initialize);
-        ServerLifecycleEvents.SERVER_STOPPED.register((_) -> MessageBuffer.flush());
+        ServerLifecycleEvents.SERVER_STOPPED.register((server) -> MessageBuffer.flush());
 
-        ServerPlayConnectionEvents.JOIN.register((_, sender, server) -> {
+        ServerPlayConnectionEvents.JOIN.register((listener, sender, server) -> {
             server.execute(() -> {
                 List<TimestampedMessage> buffer = MessageBuffer.getBuffer();
                 if (!buffer.isEmpty()) {

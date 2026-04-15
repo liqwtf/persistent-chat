@@ -1,6 +1,10 @@
 package dev.liqw.persistentchat.utils;
 
+//? >=26 {
 import net.minecraft.client.multiplayer.chat.GuiMessage;
+ //? } else {
+/*import net.minecraft.client.GuiMessage;
+*///? }
 import org.spongepowered.asm.mixin.Unique;
 
 public interface GuiMessageAccessor {

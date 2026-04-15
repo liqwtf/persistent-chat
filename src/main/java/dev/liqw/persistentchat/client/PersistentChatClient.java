@@ -28,11 +28,11 @@ public class PersistentChatClient implements ClientModInitializer {
             client.execute(() -> StateManager.load(client.gui.getChat(), payload));
         });
 
-        ClientPlayConnectionEvents.JOIN.register((_, _, client) -> {
+        ClientPlayConnectionEvents.JOIN.register((listener, sender, client) -> {
             client.execute(() -> StateManager.load(client.gui.getChat()));
         });
 
-        ClientPlayConnectionEvents.DISCONNECT.register((_, _) -> {
+        ClientPlayConnectionEvents.DISCONNECT.register((listener, client) -> {
             StateManager.reset();
         });
     }

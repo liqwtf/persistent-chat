@@ -1,7 +1,10 @@
 package dev.liqw.persistentchat.client.mixin;
 
 import net.minecraft.client.gui.components.ChatComponent;
+//? >=26 {
 import net.minecraft.client.multiplayer.chat.GuiMessage;
+ //? } else
+//import net.minecraft.client.GuiMessage;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 

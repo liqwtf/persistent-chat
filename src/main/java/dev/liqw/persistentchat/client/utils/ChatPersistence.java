@@ -1,14 +1,18 @@
 package dev.liqw.persistentchat.client.utils;
 
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.liqw.persistentchat.client.mixin.ChatComponentStateAccessor;
 import dev.liqw.persistentchat.utils.GuiMessageAccessor;
 import net.minecraft.client.gui.components.ChatComponent;
+//? >=26 {
 import net.minecraft.client.multiplayer.chat.GuiMessage;
 import net.minecraft.client.multiplayer.chat.GuiMessageSource;
 import net.minecraft.client.multiplayer.chat.GuiMessageTag;
+//? } else {
+/*import net.minecraft.client.GuiMessage;
+import net.minecraft.client.GuiMessageTag;
+*///? }
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.network.chat.MessageSignature;
@@ -22,10 +26,11 @@ public class ChatPersistence {
 
     private static final Codec<GuiMessage> GUI_MESSAGE_CODEC = RecordCodecBuilder.create(instance -> instance.group(
             ComponentSerialization.CODEC.fieldOf("content").forGetter(GuiMessage::content),
+            //? >=26
             Codec.INT.xmap(i -> GuiMessageSource.values()[i], Enum::ordinal).fieldOf("source").forGetter(GuiMessage::source),
             Codec.LONG.fieldOf("timestamp").forGetter(message -> GuiMessageAccessor.of(message).getTimestamp())
-    ).apply(instance, (content, source, timestamp) -> {
-        GuiMessage message = new GuiMessage(-999, content, null, source, GUI_MESSAGE_TAG_LOCAL);
+    ).apply(instance, (content, /*? >=26 {*/ source, /*? }*/ timestamp) -> {
+        GuiMessage message = new GuiMessage(-999, content, null, /*? >=26 {*/ source, /*? }*/ GUI_MESSAGE_TAG_LOCAL);
         GuiMessageAccessor.of(message).setTimestamp(timestamp);
         return message;
     }));

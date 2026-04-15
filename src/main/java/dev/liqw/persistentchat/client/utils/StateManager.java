@@ -9,8 +9,12 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.ChatComponent;
 import net.minecraft.client.multiplayer.ServerData;
+//? >=26 {
 import net.minecraft.client.multiplayer.chat.GuiMessage;
 import net.minecraft.client.multiplayer.chat.GuiMessageSource;
+//? } else {
+/*import net.minecraft.client.GuiMessage;
+*///? }
 import net.minecraft.nbt.*;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.world.level.storage.LevelResource;
@@ -46,7 +50,7 @@ public class StateManager {
 
     private static void markRestored(List<GuiMessage> messages) {
         recentlyRestored.clear();
-        messages.forEach(msg -> recentlyRestored.add(GuiMessageAccessor.of(msg).getTimestamp()));
+        messages.forEach(message -> recentlyRestored.add(GuiMessageAccessor.of(message).getTimestamp()));
         restoreTime = System.currentTimeMillis();
     }
 
@@ -145,7 +149,7 @@ public class StateManager {
         if (!Files.exists(activePath)) {
             List<GuiMessage> messages = new ArrayList<>();
             for (int i = 0; i < payload.messages().size(); i++) {
-                GuiMessage message = new GuiMessage(-999, payload.messages().get(i), null, GuiMessageSource.PLAYER, ChatPersistence.GUI_MESSAGE_TAG_SERVER);
+                GuiMessage message = new GuiMessage(-999, payload.messages().get(i), null, /*? >=26 {*/ GuiMessageSource.PLAYER, /*? }*/ ChatPersistence.GUI_MESSAGE_TAG_SERVER);
                 GuiMessageAccessor.of(message).setTimestamp(payload.timestamps().get(i));
                 GuiMessageAccessor.of(message).setFromPayload(true);
                 messages.add(message);
@@ -173,7 +177,7 @@ public class StateManager {
                             .anyMatch(savedTs -> timestampMatches(savedTs, timestamp));
                     if (isDuplicate) continue;
 
-                    GuiMessage message = new GuiMessage(-999, payload.messages().get(i), null, GuiMessageSource.PLAYER, ChatPersistence.GUI_MESSAGE_TAG_SERVER);
+                    GuiMessage message = new GuiMessage(-999, payload.messages().get(i), null, /*? >=26 {*/ GuiMessageSource.PLAYER, /*? } */ ChatPersistence.GUI_MESSAGE_TAG_SERVER);
                     GuiMessageAccessor.of(message).setTimestamp(timestamp);
                     GuiMessageAccessor.of(message).setFromPayload(true);
                     messages.add(message);
