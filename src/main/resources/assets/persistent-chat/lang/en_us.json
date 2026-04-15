@@ -1,4 +1,6 @@
 {
+  "persistent-chat.chat.tag.payload": "Retrieved from server (sent offline)",
+  "persistent-chat.chat.tag.local": "Restored message",
   "text.autoconfig.persistent-chat.title": "Persistent Chat Configuration",
   "text.autoconfig.persistent-chat.option.enabled": "Enabled",
   "text.autoconfig.persistent-chat.option.enabled.@Tooltip": "Toggle core functionality of the mod",
