@@ -84,9 +84,9 @@ tasks {
 
         val properties = buildMap {
             put("version", project.version.toString())
-            register("description", "description")
-            register("sources", "sources_url")
-            register("issues", "issues_url")
+            register("description", "mod.description")
+            register("sources", "mod.sources_url")
+            register("issues", "mod.issues_url")
             register("loader", "loader_version")
             register("minecraft", "minecraft_version")
         }
