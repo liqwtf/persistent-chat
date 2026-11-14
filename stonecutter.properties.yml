@@ -6,8 +6,16 @@ mod:
     sources_url: "https://github.com/liqwtf/persistent-chat"
     issues_url: "https://github.com/liqwtf/persistent-chat/issues"
 
-loomx.loom_version: "1.16-SNAPSHOT"
-loader_version: "0.19.1"
+loomx.loom_version: "1.19-SNAPSHOT"
+loader_version: "0.19.5"
+
+"26.3":
+    minecraft_version: "26.3"
+    publish_versions:
+        - "26.3"
+    fabric_api_version: "0.165.0+26.3"
+    cloth_config_version: "26.3.158"
+    mod_menu_version: "21.0.0"
 
 "26.1":
     minecraft_version: "~26.1"
